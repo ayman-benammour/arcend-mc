@@ -12,5 +12,8 @@
   "type": "commonjs",
   "devDependencies": {
     "electron": "^40.4.1"
+  },
+  "dependencies": {
+    "minecraft-launcher-core": "^3.18.2"
   }
 }

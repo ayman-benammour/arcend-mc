@@ -27,6 +27,14 @@
     button:hover {
       opacity: 0.9;
     }
+    #loader-container {
+    transition: opacity 0.5s ease;
+}
+
+#progress-bar {
+    /* Ajoute un petit effet de lueur pour que ça fasse plus "pro" */
+    box-shadow: 0 0 10px rgba(255, 71, 71, 0.5);
+}
   </style>
 </head>
 <body>
@@ -44,6 +52,15 @@
       
         <button onclick="window.arcend.play()">PLAY</button>
       </div>
+      <div id="loader-container" style="display: none; width: 80%; margin: 20px auto; font-family: sans-serif;">
+        <div style="display: flex; justify-content: space-between; color: #ccc; font-size: 12px; margin-bottom: 5px;">
+            <span id="status-text">Téléchargement des fichiers...</span>
+            <span id="percent-text">0%</span>
+        </div>
+        <div style="width: 100%; background: #222; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div id="progress-bar" style="width: 0%; background: #ff4747; height: 100%; transition: width 0.2s;"></div>
+        </div>
+    </div>
       
       <script>
         async function init() {
@@ -62,6 +79,36 @@
         }
       
         init();
+
+        // On écoute la progression envoyée par le main.js
+        window.arcend.onProgress((data) => {
+    const container = document.getElementById("loader-container");
+    const bar = document.getElementById("progress-bar");
+    const percentText = document.getElementById("percent-text");
+    const statusText = document.getElementById("status-text");
+
+    // S'assurer que le loader est visible dès que ça commence
+    if (container.style.display === "none") {
+        container.style.display = "block";
+    }
+
+    const percent = Math.round((data.task / data.total) * 100);
+    
+    // Mise à jour visuelle
+    bar.style.width = percent + "%";
+    percentText.innerText = percent + "%";
+    
+    // Gestion du texte selon l'avancement
+    if (percent < 100) {
+        statusText.innerText = `Téléchargement : ${data.type}...`;
+    } else {
+        // État final : on bloque tout ici
+        statusText.innerText = "Téléchargements terminés ! Lancement de Minecraft...";
+        bar.style.width = "100%";
+        bar.style.backgroundColor = "#2ecc71"; // Un beau vert pour dire que c'est OK
+        percentText.innerText = "100%";
+    }
+});
       </script>
       
       
